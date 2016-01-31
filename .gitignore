@@ -1,0 +1,9 @@
+Debug
+/Dev Diary.txt
+x64
+*.sdf
+*.sln
+*.vcxproj
+*.vcxproj.filters
+*.vcxproj.user
+*.suo
