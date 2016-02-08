@@ -7,6 +7,9 @@ HWND hWnd;
 int wndWidth = 800;
 int wndHeight = 600;
 
+int mouseX = 0;
+int mouseY = 0;
+
 void createWindow(HINSTANCE hInstance, WNDPROC WindowProc, int nCmdShow) {
 	if (!created) {
 		WNDCLASSEX wc;
@@ -43,4 +46,8 @@ void createWindow(HINSTANCE hInstance, WNDPROC WindowProc, int nCmdShow) {
 		UnregisterClass("BasicWindow", hInstance);
 		created = true;
 	}
+}
+
+float wndRatio(void) {
+	return (float)wndHeight / (float)wndWidth;
 }

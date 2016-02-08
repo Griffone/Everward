@@ -31,6 +31,8 @@ bool initD3D() {
 	D3DPRESENT_PARAMETERS d3dpp;    // create a struct to hold various device information
 
 	ZeroMemory(&d3dpp, sizeof(d3dpp));    // clear out the struct for use
+	d3dpp.BackBufferWidth = wndWidth;
+	d3dpp.BackBufferHeight = wndHeight;
 	d3dpp.Windowed = TRUE;    // program windowed, not fullscreen
 	d3dpp.SwapEffect = D3DSWAPEFFECT_DISCARD;    // discard old frames
 	d3dpp.hDeviceWindow = hWnd;    // set the window to be used by Direct3D
@@ -50,8 +52,10 @@ bool initD3D() {
 	d3ddev->SetRenderState(D3DRS_LIGHTING, FALSE);    // turn off the 3D lighting
 	d3ddev->SetRenderState(D3DRS_ALPHABLENDENABLE, TRUE); // enable transparency
 
-	d3ddev->SetRenderState(D3DRS_SRCBLEND, D3DBLEND_SRCCOLOR);
-	d3ddev->SetRenderState(D3DRS_DESTBLEND, D3DBLEND_INVSRCCOLOR);
+	d3ddev->SetRenderState(D3DRS_SRCBLEND, D3DBLEND_INVSRCCOLOR);
+	d3ddev->SetRenderState(D3DRS_DESTBLEND, D3DBLEND_SRCCOLOR);
+
+	d3ddev->SetFVF(CUSTOMFVF);
 
 	return true;
 }
@@ -65,8 +69,7 @@ void load_geometry(void) {
 		{ -0.5f, 0.5f, 0.0f, 0.0f, 0.0f },
 	};
 
-	// there is a D3DXCreateTextureFromFile() function that only needs 3 parameters, but it read the texture with wrong format
-	D3DXCreateTextureFromFileEx(d3ddev, "..\\Sprites\\base.png", D3DX_DEFAULT, D3DX_DEFAULT, D3DX_DEFAULT, 0, D3DFMT_A8B8G8R8, D3DPOOL_MANAGED, D3DX_DEFAULT, D3DX_DEFAULT, 0, NULL, NULL, &tx);
+	D3DXCreateTextureFromFile(d3ddev, "..\\Sprites\\base.dds", &tx);
 
 	// create a vertex buffer interface called vb
 	d3ddev->CreateVertexBuffer(4 * sizeof(CUSTOMVERTEX),
@@ -89,18 +92,12 @@ void render_frame(void) {
 
 	d3ddev->BeginScene();    // begins the 3D scene
 
-							 // select which vertex format we are using
-	d3ddev->SetFVF(CUSTOMFVF);
-
 	// SET UP THE PIPELINE
+	D3DXMATRIX matTranslate;
 
-	D3DXMATRIX matRotateZ;    // a matrix to store the rotation information
+	Vector2 mousePos = worldCoord(mouseX, mouseY);
 
-							  // build a matrix to rotate the model based on the increasing float value
-	D3DXMatrixRotationZ(&matRotateZ, 0);
-
-	// tell Direct3D about our matrix
-	d3ddev->SetTransform(D3DTS_WORLD, &matRotateZ);
+	D3DXMatrixTranslation(&matTranslate, mousePos.x, mousePos.y, 0);
 
 	D3DXMATRIX matView;    // the view transform matrix
 
@@ -109,13 +106,13 @@ void render_frame(void) {
 		&D3DXVECTOR3(0.0f, 0.0f, 0.0f),    // the look-at position
 		&D3DXVECTOR3(0.0f, 1.0f, 0.0f));    // the up direction
 
-	d3ddev->SetTransform(D3DTS_VIEW, &matView);    // set the view transform to matView
+	d3ddev->SetTransform(D3DTS_VIEW, &(matTranslate * matView));    // set the view transform to matView
 
 	D3DXMATRIX matProjection;     // the projection transform matrix
 
 	D3DXMatrixOrthoRH(&matProjection,
 		viewWidth,	// the horizontal view volume
-		viewWidth * (FLOAT)wndHeight / (FLOAT)wndWidth,	// the vertical view volume
+		viewWidth * wndRatio(),	// the vertical view volume
 		0.25f,    // the near view-plane
 		15.0f);    // the far view-plane
 
@@ -142,4 +139,11 @@ void cleanD3D(void) {
 	if (d3ddev != NULL) {
 		d3d->Release();
 	}
+}
+
+Vector2 worldCoord(int x, int y) {
+	float wX = ((float)x / (float)wndWidth - 0.5f) * viewWidth;
+	float wY = -((float)y / (float)wndHeight - 0.5f) * viewWidth * wndRatio();
+
+	return Vector2(wX, wY);
 }

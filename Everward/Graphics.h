@@ -1,5 +1,6 @@
 #pragma once
 #include "Window.h"
+#include "Vector2.h"
 
 // Sets up and initializes Direct3D
 bool initD3D();
@@ -17,3 +18,6 @@ void cleanD3D(void);
 extern float viewWidth;
 
 struct CUSTOMVERTEX;
+
+// Translates given window coordinates into world coordinates
+Vector2 worldCoord(int x, int y);

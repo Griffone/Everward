@@ -1,5 +1,6 @@
 // basic headers
 #include "Graphics.h"
+#include <windowsx.h>
 
 // the WindowProc function declaration
 LRESULT CALLBACK WindowProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam);
@@ -44,6 +45,22 @@ LRESULT CALLBACK WindowProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lPara
 		PostQuitMessage(0);
 		return 0;
 	} break;
+	case WM_MOUSEMOVE: {
+		mouseX = GET_X_LPARAM(lParam);
+		mouseY = GET_Y_LPARAM(lParam);
+		return 0;
+	} break;
+	case WM_MOUSEWHEEL: {
+		float newViewWidth = viewWidth - GET_WHEEL_DELTA_WPARAM(wParam) / WHEEL_DELTA;
+		if (newViewWidth < 0.5f) {
+			viewWidth = 0.5f;
+		}
+		else if (newViewWidth > 15.0f) {
+			viewWidth = 15.0f;
+		} else {
+			viewWidth = newViewWidth;
+		}
+	}
 	}
 
 	return DefWindowProc(hWnd, message, wParam, lParam);
