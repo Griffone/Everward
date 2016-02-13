@@ -4,11 +4,11 @@ bool created = false;
 
 HWND hWnd;
 
-int wndWidth = 800;
-int wndHeight = 600;
+int wndWidth = WND_WIDTH;
+int wndHeight = WND_HEIGHT;
 
-int mouseX = 0;
-int mouseY = 0;
+short mouseX = 0;
+short mouseY = 0;
 
 void createWindow(HINSTANCE hInstance, WNDPROC WindowProc, int nCmdShow) {
 	if (!created) {
@@ -17,7 +17,6 @@ void createWindow(HINSTANCE hInstance, WNDPROC WindowProc, int nCmdShow) {
 		ZeroMemory(&wc, sizeof(WNDCLASSEX));
 
 		wc.cbSize = sizeof(WNDCLASSEX);
-		wc.style = CS_HREDRAW | CS_VREDRAW;
 		wc.lpfnWndProc = WindowProc;
 		wc.hInstance = hInstance;
 		wc.hCursor = LoadCursor(NULL, IDC_ARROW);
@@ -26,14 +25,11 @@ void createWindow(HINSTANCE hInstance, WNDPROC WindowProc, int nCmdShow) {
 
 		RegisterClassEx(&wc);
 
-		wndWidth = 800;
-		wndHeight = 600;
-
 		hWnd = CreateWindowEx(NULL,
 			"BasicWindow",
 			"Everward",
-			WS_OVERLAPPEDWINDOW,
-			300, 300,
+			WS_TILEDWINDOW,
+			(GetSystemMetrics(SM_CXSCREEN) - wndWidth) / 2, (GetSystemMetrics(SM_CYSCREEN) - wndHeight) / 2,
 			wndWidth, wndHeight,
 			NULL,
 			NULL,
@@ -42,12 +38,21 @@ void createWindow(HINSTANCE hInstance, WNDPROC WindowProc, int nCmdShow) {
 
 		ShowWindow(hWnd, nCmdShow);
 
+		calculateWindowSize();
+
 		// clean up the class memory
 		UnregisterClass("BasicWindow", hInstance);
 		created = true;
 	}
 }
 
-float wndRatio(void) {
-	return (float)wndHeight / (float)wndWidth;
+bool calculateWindowSize(void) {
+	RECT rect;
+	if (GetClientRect(hWnd, &rect)) {
+		wndWidth = rect.right - rect.left;
+		wndHeight = rect.bottom - rect.top;
+		return true;
+	} else {
+		return false;
+	}
 }

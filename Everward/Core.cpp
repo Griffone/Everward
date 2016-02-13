@@ -14,7 +14,7 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine
 	initD3D();
 
 	// loads graphics
-	load_geometry();
+	loadGeometry();
 
 	// the main loop:
 	MSG msg;
@@ -28,7 +28,7 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine
 		if (msg.message == WM_QUIT)
 			break;
 
-		render_frame();
+		renderFrame();
 	}
 
 	// clean up DirectX and COM
@@ -60,7 +60,15 @@ LRESULT CALLBACK WindowProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lPara
 		} else {
 			viewWidth = newViewWidth;
 		}
-	}
+	} break;
+	case WM_SIZE: {
+		cleanD3D();
+		int oldWidth = wndWidth;
+		calculateWindowSize();
+		viewWidth *= (float)wndWidth / (float)oldWidth;
+		initD3D();
+		loadGeometry();
+	} break;
 	}
 
 	return DefWindowProc(hWnd, message, wParam, lParam);

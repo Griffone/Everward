@@ -1,17 +1,21 @@
 #pragma once
-#include <windows.h>
+#include <Windows.h>
+#include "Vector2.h"
+
+#define WND_WIDTH 800
+#define WND_HEIGHT 600
 
 // Handle to the current window (requires createWindow to be called)
 extern HWND hWnd;
 
-// The size of the current window in pixels
+// The size of the current window client area in pixels
 extern int wndWidth, wndHeight;
 
 // The current mouse position
-extern int mouseX, mouseY;
+extern short mouseX, mouseY;
 
 // Creates a new window
 void createWindow(HINSTANCE hInstance, WNDPROC WindowProc, int nCmdShow);
 
-// Gets window height to width ratio as a float
-float wndRatio(void);
+// Calculates current window client area
+bool calculateWindowSize(void);

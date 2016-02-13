@@ -21,6 +21,7 @@ struct CUSTOMVERTEX {
 #define CUSTOMFVF (D3DFVF_XYZ | D3DFVF_TEX1)
 
 float viewWidth = 3.0f;
+float currentRatio;
 
 bool initD3D() {
 	// creating the d3d interface
@@ -31,14 +32,16 @@ bool initD3D() {
 	D3DPRESENT_PARAMETERS d3dpp;    // create a struct to hold various device information
 
 	ZeroMemory(&d3dpp, sizeof(d3dpp));    // clear out the struct for use
+
 	d3dpp.BackBufferWidth = wndWidth;
 	d3dpp.BackBufferHeight = wndHeight;
 	d3dpp.Windowed = TRUE;    // program windowed, not fullscreen
 	d3dpp.SwapEffect = D3DSWAPEFFECT_DISCARD;    // discard old frames
 	d3dpp.hDeviceWindow = hWnd;    // set the window to be used by Direct3D
 
+	currentRatio = (float)wndHeight / (float)wndWidth;
 
-								   // create a device class using this information and the info from the d3dpp stuct
+	// create a device class using this information and the info from the d3dpp stuct
 	if (FAILED(d3d->CreateDevice(
 		D3DADAPTER_DEFAULT,
 		D3DDEVTYPE_HAL,
@@ -60,19 +63,19 @@ bool initD3D() {
 	return true;
 }
 
-void load_geometry(void) {
+void loadGeometry(void) {
 	// create the vertices using the CUSTOMVERTEX struct
 	CUSTOMVERTEX vertices[] = {
 		{ 0.5f, -0.5f, 0.0f, 1.0f, 1.0f },
 		{ -0.5f, -0.5f, 0.0f, 0.0f, 1.0f },
 		{ 0.5f, 0.5f, 0.0f, 1.0f, 0.0f },
-		{ -0.5f, 0.5f, 0.0f, 0.0f, 0.0f },
+		{ -0.5f, 0.5f, 0.0f, 0.0f, 0.0f }
 	};
 
 	D3DXCreateTextureFromFile(d3ddev, "..\\Sprites\\base.dds", &tx);
 
 	// create a vertex buffer interface called vb
-	d3ddev->CreateVertexBuffer(4 * sizeof(CUSTOMVERTEX),
+	d3ddev->CreateVertexBuffer(sizeof(vertices),
 		0,
 		CUSTOMFVF,
 		D3DPOOL_MANAGED,
@@ -87,7 +90,7 @@ void load_geometry(void) {
 	vb->Unlock();
 }
 
-void render_frame(void) {
+void renderFrame(void) {
 	d3ddev->Clear(0, NULL, D3DCLEAR_TARGET, D3DCOLOR_XRGB(0, 162, 232), 1.0f, 0);	// use 0, 162, 232 for nice blue color
 
 	d3ddev->BeginScene();    // begins the 3D scene
@@ -112,7 +115,7 @@ void render_frame(void) {
 
 	D3DXMatrixOrthoRH(&matProjection,
 		viewWidth,	// the horizontal view volume
-		viewWidth * wndRatio(),	// the vertical view volume
+		viewWidth * currentRatio,	// the vertical view volume
 		0.25f,    // the near view-plane
 		15.0f);    // the far view-plane
 
@@ -142,8 +145,10 @@ void cleanD3D(void) {
 }
 
 Vector2 worldCoord(int x, int y) {
-	float wX = ((float)x / (float)wndWidth - 0.5f) * viewWidth;
-	float wY = -((float)y / (float)wndHeight - 0.5f) * viewWidth * wndRatio();
+	RECT wndRect;
+	GetClientRect(hWnd, &wndRect);
+	float wX = (((float)x / (wndRect.right - 1)) - 0.5f) * viewWidth;
+	float wY = -(((float)y / (wndRect.bottom - 1)) - 0.5f) * viewWidth * currentRatio;
 
 	return Vector2(wX, wY);
 }

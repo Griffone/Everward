@@ -1,15 +1,14 @@
 #pragma once
 #include "Window.h"
-#include "Vector2.h"
 
 // Sets up and initializes Direct3D
 bool initD3D();
 
 // Loads 3d models into graphics RAM
-void load_geometry(void);
+void loadGeometry(void);
 
 // Renders a single frame
-void render_frame(void);
+void renderFrame(void);
 
 // Closes Direct3D and releases memory
 void cleanD3D(void);
