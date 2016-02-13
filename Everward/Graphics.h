@@ -1,5 +1,6 @@
 #pragma once
 #include "Window.h"
+#include "Vector2.h"
 
 // Sets up and initializes Direct3D
 bool initD3D();

@@ -1,6 +1,5 @@
 #pragma once
 #include <Windows.h>
-#include "Vector2.h"
 
 #define WND_WIDTH 800
 #define WND_HEIGHT 600
@@ -10,6 +9,9 @@ extern HWND hWnd;
 
 // The size of the current window client area in pixels
 extern int wndWidth, wndHeight;
+
+// The size of the current screen in pixels
+extern int screenWidth, screenHeight;
 
 // The current mouse position
 extern short mouseX, mouseY;

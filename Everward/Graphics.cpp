@@ -12,6 +12,7 @@ LPDIRECT3D9 d3d = NULL;    // the pointer to our Direct3D interface
 LPDIRECT3DDEVICE9 d3ddev = NULL;    // the pointer to the device class
 LPDIRECT3DVERTEXBUFFER9 vb = NULL;	// the pointer to the vertex buffer
 LPDIRECT3DTEXTURE9 tx = NULL;	// the pointer to the texture
+LPD3DXFONT font = NULL;
 
 struct CUSTOMVERTEX {
 	FLOAT x, y, z;
@@ -74,6 +75,11 @@ void loadGeometry(void) {
 
 	D3DXCreateTextureFromFile(d3ddev, "..\\Sprites\\base.dds", &tx);
 
+	RECT rect;
+
+	if (FAILED(D3DXCreateFont(d3ddev, 26, 0, FW_NORMAL, 1, false, DEFAULT_CHARSET, OUT_DEFAULT_PRECIS, ANTIALIASED_QUALITY, FF_DONTCARE, "Arial", &font)))
+		OutputDebugString("Problem");
+
 	// create a vertex buffer interface called vb
 	d3ddev->CreateVertexBuffer(sizeof(vertices),
 		0,
@@ -109,7 +115,7 @@ void renderFrame(void) {
 		&D3DXVECTOR3(0.0f, 0.0f, 0.0f),    // the look-at position
 		&D3DXVECTOR3(0.0f, 1.0f, 0.0f));    // the up direction
 
-	d3ddev->SetTransform(D3DTS_VIEW, &(matTranslate * matView));    // set the view transform to matView
+	d3ddev->SetTransform(D3DTS_VIEW, &(matView));    // set the view transform to matView
 
 	D3DXMATRIX matProjection;     // the projection transform matrix
 
@@ -129,6 +135,12 @@ void renderFrame(void) {
 	// copy the vertex buffer to the back buffer
 	d3ddev->DrawPrimitive(D3DPT_TRIANGLESTRIP, 0, 2);
 
+	RECT rect;
+
+	SetRect(&rect, 0, 0, wndWidth, wndHeight);
+
+	font->DrawTextA(NULL, "Everward", 8, &rect, DT_CENTER | DT_VCENTER, 0xffffff00);
+
 	d3ddev->EndScene();    // ends the 3D scene
 
 	d3ddev->Present(NULL, NULL, NULL, NULL);   // displays the created frame on the screen
@@ -141,6 +153,15 @@ void cleanD3D(void) {
 	}
 	if (d3ddev != NULL) {
 		d3d->Release();
+	}
+	if (tx != NULL) {
+		tx->Release();
+	}
+	if (vb != NULL) {
+		vb->Release();
+	}
+	if (font != NULL) {
+		font->Release();
 	}
 }
 

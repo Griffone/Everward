@@ -7,6 +7,9 @@ HWND hWnd;
 int wndWidth = WND_WIDTH;
 int wndHeight = WND_HEIGHT;
 
+int screenWidth = GetSystemMetrics(SM_CXSCREEN);
+int screenHeight = GetSystemMetrics(SM_CYSCREEN);
+
 short mouseX = 0;
 short mouseY = 0;
 
@@ -29,7 +32,7 @@ void createWindow(HINSTANCE hInstance, WNDPROC WindowProc, int nCmdShow) {
 			"BasicWindow",
 			"Everward",
 			WS_TILEDWINDOW,
-			(GetSystemMetrics(SM_CXSCREEN) - wndWidth) / 2, (GetSystemMetrics(SM_CYSCREEN) - wndHeight) / 2,
+			(screenWidth - wndWidth) / 2, (screenHeight - wndHeight) / 2,
 			wndWidth, wndHeight,
 			NULL,
 			NULL,
