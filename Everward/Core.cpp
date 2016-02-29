@@ -55,8 +55,8 @@ LRESULT CALLBACK WindowProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lPara
 		if (newViewWidth < 0.5f) {
 			viewWidth = 0.5f;
 		}
-		else if (newViewWidth > 15.0f) {
-			viewWidth = 15.0f;
+		else if (newViewWidth > 8.0f) {
+			viewWidth = 8.0f;
 		} else {
 			viewWidth = newViewWidth;
 		}

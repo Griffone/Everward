@@ -56,8 +56,11 @@ bool initD3D() {
 	d3ddev->SetRenderState(D3DRS_LIGHTING, FALSE);    // turn off the 3D lighting
 	d3ddev->SetRenderState(D3DRS_ALPHABLENDENABLE, TRUE); // enable transparency
 
-	d3ddev->SetRenderState(D3DRS_SRCBLEND, D3DBLEND_INVSRCCOLOR);
-	d3ddev->SetRenderState(D3DRS_DESTBLEND, D3DBLEND_SRCCOLOR);
+	d3ddev->SetRenderState(D3DRS_SRCBLEND, D3DBLEND_SRCALPHA);
+	d3ddev->SetRenderState(D3DRS_DESTBLEND, D3DBLEND_INVSRCALPHA);
+
+	d3ddev->SetSamplerState(0, D3DSAMP_MAGFILTER, D3DTEXF_LINEAR);
+	d3ddev->SetSamplerState(0, D3DSAMP_MINFILTER, D3DTEXF_LINEAR);
 
 	d3ddev->SetFVF(CUSTOMFVF);
 
